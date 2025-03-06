@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ShaxaCoin Clicker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #1e1e2e;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .coin {
+            font-size: 24px;
+            margin: 20px;
+        }
+        .click-btn {
+            background: url('https://png.klev.club/uploads/posts/2024-05/png-klev-club-6qar-p-koin-png-3.png') no-repeat center;
+            background-size: cover;
+            width: 100px;
+            height: 100px;
+            border: none;
+            cursor: pointer;
+            border-radius: 50%;
+            margin: 20px;
+        }
+        .shop-container {
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 0;
+        }
+        .shop-btn {
+            background-color: #ff9800;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+        .shop-btn:hover {
+            background-color: #e68900;
+        }
+        .shop {
+            display: none;
+            padding: 20px;
+        }
+        .shop-item {
+            background-color: #333;
+            padding: 15px;
+            margin: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ShaxaCoin Clicker</h1>
+        <p class="coin">ShaxaCoins: <span id="coins">0</span></p>
+        <button class="click-btn" onclick="earnCoin()"></button>
+    </div>
+    
+    <div class="shop-container">
+        <button class="shop-btn" onclick="openShop()">Магазин</button>
+    </div>
+    
+    <div class="shop" id="shop">
+        <h2>Магазин</h2>
+        <div class="shop-item" onclick="buySkin(100, '#09ff00')">новичок (100 ShaxaCoins)</div>
+        <div class="shop-item" onclick="buySkin(200, '#1100fa')">опытный игрок (200 ShaxaCoins)</div>
+        <div class="shop-item" onclick="buySkin(1000, '#fa0000')">мастер (1000 ShaxaCoins)</div>
+        <div class="shop-item" onclick="buySkin(10000, '#000000')">Профи (10000 ShaxaCoins)</div>
+        <div class="shop-item" onclick="buyAutoClicker()">Автокликер (1000 ShaxaCoins)</div>
+        <button class="shop-btn" onclick="closeShop()">Закрыть</button>
+    </div>
+    
+    <script>
+        let coins = parseInt(localStorage.getItem("coins")) || 0;
+        let autoClicker = JSON.parse(localStorage.getItem("autoClicker")) || false;
+        document.getElementById('coins').innerText = coins;
+
+        function earnCoin() {
+            coins++;
+            updateCoins();
+        }
+
+        function updateCoins() {
+            document.getElementById('coins').innerText = coins;
+            localStorage.setItem("coins", coins);
+        }
+
+        function openShop() {
+            document.getElementById('shop').style.display = 'block';
+        }
+
+        function closeShop() {
+            document.getElementById('shop').style.display = 'none';
+        }
+
+        function buySkin(price, color) {
+            if (coins >= price) {
+                coins -= price;
+                updateCoins();
+                document.body.style.backgroundColor = color;
+                alert('Вы купили новый скин!');
+            } else {
+                alert('Недостаточно ShaxaCoins!');
+            }
+        }
+
+        function buyAutoClicker() {
+            if (!autoClicker && coins >= 1000) {
+                coins -= 1000;
+                autoClicker = true;
+                updateCoins();
+                localStorage.setItem("autoClicker", JSON.stringify(autoClicker));
+                startAutoClicker();
+                alert("Вы купили автокликер!");
+            } else if (autoClicker) {
+                alert("Автокликер уже куплен!");
+            } else {
+                alert("Недостаточно ShaxaCoins!");
+            }
+        }
+
+        function startAutoClicker() {
+            if (autoClicker) {
+                setInterval(() => {
+                    coins++;
+                    updateCoins();
+                }, 1000);
+            }
+        }
+
+        startAutoClicker();
+
+        document.addEventListener("dblclick", (e) => e.preventDefault());
+        let lastTouchEnd = 0;
+        document.addEventListener("touchend", (e) => {
+            let now = new Date().getTime();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+    </script>
+</body>
+</html>
